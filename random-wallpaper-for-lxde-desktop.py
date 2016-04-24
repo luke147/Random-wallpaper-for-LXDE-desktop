@@ -84,6 +84,7 @@ def isPython2():
 
 class Params:
     __showHelp = False
+    __showVersion = False
     __picsPath = ""
     __display = ":0"
     __wallpaperMode = "center"
@@ -97,6 +98,10 @@ class Params:
     @property
     def showHelp(self):
         return self.__showHelp
+    
+    @property
+    def showVersion(self):
+        return self.__showVersion
     
     @property
     def picsPath(self):
@@ -185,6 +190,9 @@ class Params:
                     continue
                 if (Params.paramsAreEqual(sys.argv[i], Params.__helpParam)):
                     showHelp = True
+                    break
+                if (Params.paramsAreEqual(sys.argv[i], Params.__versionParam)):
+                    showVersion = True
                     break
                 if (Params.paramsAreEqual(sys.argv[i], Params.__wallpaperModeParam)):
                     wModeFromParam = sys.argv[i][len(Params.__wallpaperModeParam):]
@@ -362,7 +370,11 @@ class App:
             
             if (params.showHelp):
                 self.showHelp()
-                sys.exit(os.EX_OK)
+                sys.exit(self.returnCode)
+            
+            if (params.showVersion):
+                self.printScriptVersion()
+                sys.exit(self.returnCode)
             
             if (params.picsPath == ""):
                 folderWithWallpapers = self.findPicsDir()
