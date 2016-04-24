@@ -91,6 +91,7 @@ class Params:
     __displayParam = "--display="
     __wallpaperModeParam = "--wallpaper-mode="
     __allWallpaperModes = ("color", "stretch", "fit", "center", "tile")
+    __versionParam = ("-v", "--version")
     stringType = None
     
     @property
@@ -120,6 +121,10 @@ class Params:
     @property
     def helpParam(self):
         return self.__helpParam
+    
+    @property
+    def versionParam(self):
+        return self.__versionParam
     
     def __init__(self, picsPath, display = "", wallpaperMode = "", showHelp = False):
         self.__picsPath = picsPath
@@ -217,16 +222,24 @@ class App:
     defPicturesPath = "XDG_PICTURES_DIR"
     returnCode = 0
     terminalColumns = -1
+    scriptVersion = "1.0"
+    scriptName = "Random wallpaper for LXDE desktop"
+    scriptNameWithExt = ""
+    scriptNameWithoutExt = ""
+    copyright = "Copyright © 2016 Lukáš Vlček"
     
     def __init__(self):        
         # --------------------------------------------- variables ---------------------------------------------
-        scriptName = os.path.basename(sys.argv[0])
-        scriptName, scriptExt = os.path.splitext(scriptName)
-        self.tmpFilename = "%s.tmp" % os.path.join(tempfile.gettempdir(), scriptName)
+        self.scriptNameWithExt = os.path.basename(sys.argv[0])
+        self.scriptNameWithoutExt, scriptExt = os.path.splitext(self.scriptNameWithExt)
+        self.tmpFilename = "%s.tmp" % os.path.join(tempfile.gettempdir(), self.scriptNameWithoutExt)
         self.lxdeFileManager = 'pcmanfm'
         self.pcmanfmFindingCmd = 'which "%s" &> /dev/null' % self.lxdeFileManager
         self.folderWithWallpapers = ""
         self.defPicturesPath = "XDG_PICTURES_DIR"
+
+    def printScriptVersion(self):
+        print("%s %s\n%s" % (self.scriptName, self.scriptVersion, self.copyright))
 
     def getTerminalColumns(self):
         columns = 0
@@ -279,9 +292,10 @@ class App:
         print(s)
 
     def showHelp(self):
-        scriptName = os.path.basename(sys.argv[0])
-        self.printHelpRow("Usage:\n%s [path to picture directory] [--wallpaper-mode=(color|stretch|fit|center|tile)] [--display=:<display number>]\n" % scriptName)
-        self.printHelpRow("Set a random wallpaper from directory with pictures.")
+        self.printScriptVersion()
+        self.printHelpRow("\nUsage:\n%s [[path to picture directory] [--wallpaper-mode=(color|stretch|fit|center|tile)] [--display=:<display number>]]|[-h|--help]|[-v|--version]\n" % self.scriptNameWithExt)
+        self.printHelpRow("Set a random wallpaper from default directory with pictures or from your directory.")
+        self.printHelpRow("Finding default directory:")
         self.printHelpRow("Application will find the wallpaper in picture directory from '~/.config/user-dirs.dirs' file if no argument is specified.")
         self.printHelpRow("Application will find 'XDG_PICTURES_DIR' variable in the config file.")
         print("\nArguments:")
@@ -289,6 +303,7 @@ class App:
         self.printHelpRow("  --display=:<display number>\tX display to use.")
         self.printHelpRow("  --wallpaper-mode=<mode>\tSet a mode of desktop wallpaper. Value can be: center|color|stretch|fit|crop|tile|sreen Default value is: center" )
         self.printHelpRow("  -h|--help\t\t\tShow this help message.")
+        self.printHelpRow("  -v|--version\t\t\tShow script version and copyright.")
 
     def findPicsDir(self):
         picsPath = ""
